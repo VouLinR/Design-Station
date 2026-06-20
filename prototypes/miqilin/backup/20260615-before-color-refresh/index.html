@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'Âme Élégante - 米其林三星</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Serif+SC:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div class="status-left">
+                <span class="status-time" id="statusTime">9:41</span>
+            </div>
+            <div class="status-center">
+                <span class="restaurant-name-small">L'Âme Élégante</span>
+            </div>
+            <div class="status-right">
+                <svg width="18" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
+                    <path d="M2 20h.01"></path>
+                    <path d="M7 20v-4"></path>
+                    <path d="M12 20v-8"></path>
+                    <path d="M17 20V8"></path>
+                    <path d="M22 20V4"></path>
+                </svg>
+                <svg width="20" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="7" width="16" height="10" rx="2" ry="2"></rect>
+                    <line x1="22" y1="11" x2="22" y2="13"></line>
+                    <line x1="6" y1="11" x2="14" y2="11" stroke="#D4AF37"></line>
+                </svg>
+            </div>
+        </div>
+
+        <!-- 欢迎页面 -->
+        <div id="welcomePage" class="page welcome-page active">
+            <div class="restaurant-name">L'Âme Élégante</div>
+            <div class="restaurant-subtitle">灵魂优雅 · 米其林三星</div>
+            <div class="michelin-stars">
+                <div class="star"></div>
+                <div class="star"></div>
+                <div class="star"></div>
+            </div>
+            <div class="welcome-text">
+                欢迎来到美食的艺术殿堂<br>
+                每一道菜品都是主厨的灵魂之作<br>
+                愿您在此度过一段优雅的用餐时光
+            </div>
+            <div class="welcome-buttons">
+                <button class="start-btn" onclick="showPage('menuPage')">开始点餐</button>
+                <button class="reservation-btn" onclick="showPage('reservationPage')">预约席位</button>
+            </div>
+        </div>
+
+        <!-- 预约页面 - 第一步 -->
+        <div id="reservationPage" class="page">
+            <div class="nav-header">
+                <button class="back-btn" onclick="showPage('welcomePage')">‹</button>
+                <div class="page-title">预约席位</div>
+                <div style="width: 40px;"></div>
+            </div>
+
+            <div class="reservation-form">
+                <div class="step-indicator">
+                    <div class="step active">1</div>
+                    <div class="step-line"></div>
+                    <div class="step">2</div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">用餐日期</div>
+                    <div class="date-picker" id="datePicker">
+                        <!-- 日期将通过JS生成 -->
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">用餐时间</div>
+                    <div class="time-slots" id="timeSlots">
+                        <!-- 时间 slots 将通过JS生成 -->
+                    </div>
+                    <div id="timeFullMessage" class="full-message" style="display: none;">
+                        <span>⚠</span> 该时段已约满，请选择其他时间
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">就餐位置</div>
+                    <div class="seat-options">
+                        <div class="seat-card" onclick="selectSeat(this, 'window')">
+                            <div class="seat-image">🪟</div>
+                            <div class="seat-info">
+                                <div class="seat-name">临窗雅座</div>
+                                <div class="seat-desc">俯瞰城市夜景，浪漫私密</div>
+                                <div class="seat-price">+¥200</div>
+                            </div>
+                        </div>
+                        <div class="seat-card" onclick="selectSeat(this, 'garden')">
+                            <div class="seat-image">🌿</div>
+                            <div class="seat-info">
+                                <div class="seat-name">花园露台</div>
+                                <div class="seat-desc">绿植环绕，自然清新</div>
+                                <div class="seat-price">+¥150</div>
+                            </div>
+                        </div>
+                        <div class="seat-card" onclick="selectSeat(this, 'private')">
+                            <div class="seat-image">🚪</div>
+                            <div class="seat-info">
+                                <div class="seat-name">私密包厢</div>
+                                <div class="seat-desc">独立空间，商务宴请首选</div>
+                                <div class="seat-price">+¥500</div>
+                            </div>
+                        </div>
+                        <div class="seat-card selected" onclick="selectSeat(this, 'hall')">
+                            <div class="seat-image">✨</div>
+                            <div class="seat-info">
+                                <div class="seat-name">大厅雅座</div>
+                                <div class="seat-desc">经典用餐区，氛围优雅</div>
+                                <div class="seat-price">免费</div>
+                            </div>
+                        </div>
+                        <div class="seat-card" onclick="selectSeat(this, 'chef')">
+                            <div class="seat-image">👨‍🍳</div>
+                            <div class="seat-info">
+                                <div class="seat-name">主厨吧台</div>
+                                <div class="seat-desc">近距离观赏烹饪艺术</div>
+                                <div class="seat-price">+¥300</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reservation-summary">
+                    <div class="summary-row">
+                        <span>位置费用</span>
+                        <span id="seatFee">¥0</span>
+                    </div>
+                </div>
+
+                <button class="checkout-btn" onclick="goToReservationDetailsPage()">下一步</button>
+            </div>
+        </div>
+
+        <!-- 预约页面 - 第二步 -->
+        <div id="reservationDetailsPage" class="page">
+            <div class="nav-header">
+                <button class="back-btn" onclick="showPage('reservationPage')">‹</button>
+                <div class="page-title">完成预约</div>
+                <div style="width: 40px;"></div>
+            </div>
+
+            <div class="reservation-form">
+                <div class="step-indicator">
+                    <div class="step">1</div>
+                    <div class="step-line"></div>
+                    <div class="step active">2</div>
+                </div>
+
+                <div class="section-card selected-info-card">
+                    <div class="section-title">预约信息</div>
+                    <div class="info-display">
+                        <div class="info-item">
+                            <span class="info-label">日期</span>
+                            <span class="info-value" id="displayDate">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">时间</span>
+                            <span class="info-value" id="displayTime">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">位置</span>
+                            <span class="info-value" id="displaySeat">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">用餐人数</div>
+                    <div class="guest-counter">
+                        <button class="counter-btn" onclick="changeGuests(-1)">-</button>
+                        <span class="guest-count" id="guestCount">2</span>
+                        <span class="guest-label">位</span>
+                        <button class="counter-btn" onclick="changeGuests(1)">+</button>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">联系人信息</div>
+                    <div class="form-group">
+                        <label>姓名</label>
+                        <input type="text" id="reservationName" placeholder="请输入您的姓名">
+                    </div>
+                    <div class="form-group">
+                        <label>手机号</label>
+                        <input type="tel" id="reservationPhone" placeholder="请输入11位手机号">
+                    </div>
+                    <div class="form-group">
+                        <label>特殊要求</label>
+                        <textarea id="reservationNotes" placeholder="如过敏信息、纪念日布置等..."></textarea>
+                    </div>
+                </div>
+
+                <div id="reservationError" class="error-message" style="margin: 15px 0; justify-content: center;">
+                    <span>⚠</span> 请完善所有必填信息
+                </div>
+
+                <div class="reservation-summary">
+                    <div class="summary-row">
+                        <span>位置费用</span>
+                        <span id="seatFee2">¥0</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>预约定金（可抵扣餐费）</span>
+                        <span id="depositAmount">¥500</span>
+                    </div>
+                </div>
+
+                <button class="checkout-btn" onclick="submitReservation()">确认预约并支付定金</button>
+            </div>
+        </div>
+
+        <!-- 预约成功页面 -->
+        <div id="reservationSuccessPage" class="page success-page">
+         
+            
+            <div class="order-label" style="font-size: 24px;">您的预约号</div>
+            <div class="order-number" id="reservationNumber">R-028</div>
+            
+    
+
+            <div class="reservation-details-card">
+                <div class="detail-row">
+                    <span class="detail-label">日期</span>
+                    <span class="detail-value" id="reservationDateDisplay">2026年3月30日</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">时间</span>
+                    <span class="detail-value" id="reservationTimeDisplay">18:30</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">位置</span>
+                    <span class="detail-value" id="reservationSeatDisplay">大厅雅座</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">人数</span>
+                    <span class="detail-value" id="reservationGuestsDisplay">2位</span>
+                </div>
+            </div>
+
+            <div class="quote-card">
+                <div class="quote-text">
+                    "期待与您共度一段优雅的用餐时光。"
+                </div>
+                <div class="quote-author">
+                    —— L'Âme Élégante 全体团队
+                </div>
+            </div>
+
+           <button class="cancel-order-btn" onclick="showCancelReservationConfirm()">取消预约</button>
+           <button class="new-order-btn" onclick="showPage('welcomePage')">返回首页</button>
+        </div>
+
+        <!-- 菜单页面 -->
+        <div id="menuPage" class="page">
+            <div class="nav-header">
+                <button class="back-btn" onclick="showPage('welcomePage')">‹</button>
+                <div class="page-title">精选菜单</div>
+                <div class="cart-icon" onclick="showPage('cartPage')">
+                    <span>🛍</span>
+                    <span class="cart-count" id="cartCount">0</span>
+                </div>
+            </div>
+
+            <div class="menu-categories">
+                <button class="category-btn active" onclick="filterCategory('all')">全部</button>
+                <button class="category-btn" onclick="filterCategory('starter')">前菜</button>
+                <button class="category-btn" onclick="filterCategory('main')">主菜</button>
+                <button class="category-btn" onclick="filterCategory('dessert')">甜品</button>
+                <button class="category-btn" onclick="filterCategory('wine')">配酒</button>
+            </div>
+
+            <div class="menu-grid" id="menuGrid">
+                <!-- 菜品卡片将通过JS动态生成 -->
+            </div>
+        </div>
+
+        <!-- 菜品详情模态框 -->
+        <div id="dishModal" class="modal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeModal()">×</button>
+                <img id="modalImage" class="modal-image" src="" alt="">
+                <div class="modal-body">
+                    <div class="dish-header" style="margin-bottom: 25px;">
+                        <div>
+                            <h2 id="modalDishName" class="dish-name" style="font-size: 28px;"></h2>
+                            <div id="modalDishEn" class="dish-en"></div>
+                        </div>
+                        <div id="modalPrice" class="dish-price"></div>
+                    </div>
+                    
+                    <p id="modalDesc" class="dish-desc" style="margin-bottom: 30px; font-size: 14px;"></p>
+
+                    <div class="option-section">
+                        <div class="option-title">口味偏好</div>
+                        <div class="option-grid" id="tasteOptions">
+                            <button class="option-btn" onclick="selectTaste(this)">清淡</button>
+                            <button class="option-btn" onclick="selectTaste(this)">标准</button>
+                            <button class="option-btn selected" onclick="selectTaste(this)">浓郁</button>
+                            <button class="option-btn" onclick="selectTaste(this)">特调</button>
+                        </div>
+                    </div>
+
+                    <div class="option-section">
+                        <div class="option-title">忌口与过敏</div>
+                        <div class="dietary-tags" id="dietaryOptions">
+                            <button class="dietary-btn" onclick="toggleDietary(this)">无麸质</button>
+                            <button class="dietary-btn" onclick="toggleDietary(this)">素食</button>
+                            <button class="dietary-btn" onclick="toggleDietary(this)">无坚果</button>
+                            <button class="dietary-btn" onclick="toggleDietary(this)">低钠</button>
+                            <button class="dietary-btn" onclick="toggleDietary(this)">无乳制品</button>
+                            <button class="dietary-btn" onclick="toggleDietary(this)">无海鲜</button>
+                        </div>
+                        <div id="dietaryError" class="error-message">
+                            <span>⚠</span> 请选择至少一项忌口要求，或确认"无特殊要求"
+                        </div>
+                    </div>
+
+                    <div class="option-section">
+                        <div class="option-title">特殊要求</div>
+                        <textarea id="specialRequests" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(212,175,55,0.2); color: var(--cream); padding: 15px; font-family: inherit; resize: none; height: 80px;" placeholder="请输入其他特殊要求..."></textarea>
+                    </div>
+
+                    <button class="add-to-cart-btn" onclick="addToCart()">加入购物车</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 购物车页面 -->
+        <div id="cartPage" class="page">
+            <div class="nav-header">
+                <button class="back-btn" onclick="showPage('menuPage')">‹</button>
+                <div class="page-title">购物车</div>
+                <div style="width: 40px;"></div>
+            </div>
+
+            <div id="cartItems">
+                <!-- 购物车项目将通过JS动态生成 -->
+            </div>
+
+            <div class="cart-summary" id="cartSummary" style="display: none;">
+                <div class="summary-row">
+                    <span>小计</span>
+                    <span id="subtotal">¥0</span>
+                </div>
+                <div class="summary-row">
+                    <span>服务费 (10%)</span>
+                    <span id="serviceFee">¥0</span>
+                </div>
+                <div class="summary-row total">
+                    <span>总计</span>
+                    <span id="total">¥0</span>
+                </div>
+                <button class="checkout-btn" onclick="showPage('checkoutPage')">去结算</button>
+            </div>
+
+            <div class="empty-cart" id="emptyCart">
+                <div class="empty-cart-icon">🍽</div>
+                <div style="font-size: 18px; margin-bottom: 10px; color: var(--cream);">您的购物车是空的</div>
+                <div style="font-size: 13px;">请前往菜单选择心仪的菜品</div>
+            </div>
+        </div>
+
+        <!-- 结算页面 -->
+        <div id="checkoutPage" class="page">
+            <div class="nav-header">
+                <button class="back-btn" onclick="showPage('cartPage')">‹</button>
+                <div class="page-title">结算</div>
+                <div style="width: 40px;"></div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">用餐方式</div>
+                <div class="option-list" style="flex-direction: row; gap: 15px;">
+                    <div class="radio-option radio-square selected" onclick="selectDiningOption(this, 'dinein')">
+                        <div class="radio-circle"></div>
+                        <div class="radio-content">
+                            <div class="radio-title">堂食</div>
+                        </div>
+                    </div>
+                    <div class="radio-option radio-square" onclick="selectDiningOption(this, 'takeaway')">
+                        <div class="radio-circle"></div>
+                        <div class="radio-content">
+                            <div class="radio-title">外带</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">餐具选择</div>
+                <div class="option-list" style="flex-direction: row; gap: 15px;">
+                    <div class="radio-option radio-square selected" onclick="selectUtensil(this, 'chopsticks')">
+                        <div class="radio-circle"></div>
+                        <div class="radio-content">
+                            <div class="radio-title">中式餐具</div>
+                            <div class="radio-desc" style="font-size: 11px; margin-top: 4px;">筷子+瓷勺</div>
+                        </div>
+                    </div>
+                    <div class="radio-option radio-square" onclick="selectUtensil(this, 'western')">
+                        <div class="radio-circle"></div>
+                        <div class="radio-content">
+                            <div class="radio-title">西式餐具</div>
+                            <div class="radio-desc" style="font-size: 11px; margin-top: 4px;">刀+叉+勺子</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">支付方式</div>
+                <div class="option-list">
+                    <div class="radio-option selected" onclick="selectPayment(this, 'alipay')">
+                        <div class="radio-circle"></div>
+                        <div class="radio-content">
+                            <div class="radio-title">支付宝</div>
+                            <div class="payment-icons">
+                                <div class="pay-icon">支</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="radio-option" onclick="selectPayment(this, 'wechat')">
+                        <div class="radio-circle"></div>
+                        <div class="radio-content">
+                            <div class="radio-title">微信支付</div>
+                            <div class="payment-icons">
+                                <div class="pay-icon">微</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="radio-option" onclick="selectPayment(this, 'card')">
+                        <div class="radio-circle"></div>
+                        <div class="radio-content">
+                            <div class="radio-title">信用卡</div>
+                            <div class="radio-desc">支持银联/Visa/Mastercard</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">特殊需求备注</div>
+                <div class="form-group" style="margin: 0;">
+                    <textarea id="checkoutSpecialRequests" placeholder="如：需要儿童座椅、过敏信息、生日庆祝布置、菜品温度要求等..." style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(212,175,55,0.2); color: var(--cream); padding: 15px; font-family: inherit; resize: none; height: 100px; font-size: 14px;"></textarea>
+                </div>
+            </div>
+
+            <div class="section-card" style="margin-top: 30px;">
+                <div class="summary-row total" style="border: none; margin: 0; padding: 0;">
+                    <span>应付总额</span>
+                    <span id="checkoutTotal">¥0</span>
+                </div>
+            </div>
+
+            <div id="paymentError" class="error-message" style="margin: 15px 0; justify-content: center;">
+                <span>⚠</span> 支付处理失败，请检查网络连接或更换支付方式
+            </div>
+
+            <button class="checkout-btn" onclick="processPayment()" style="margin-top: 20px;">
+                确认支付
+            </button>
+            <div class="loader" id="paymentLoader"></div>
+        </div>
+
+        <!-- 成功页面 -->
+        <div id="successPage" class="page success-page">
+            
+            <div class="order-label" style="font-size: 24px;">您的餐号</div>
+            <div class="order-number" id="orderNumber">A-028</div>
+
+            <div class="est-time">
+                <div class="time-display" id="waitTime">25-30</div>
+                <div class="time-label">预计等待时间（分钟）</div>
+            </div>
+
+            <!-- 名言卡片 -->
+            <div class="quote-card">
+                <div class="quote-text" id="quoteText">
+                    "烹饪是一门艺术，而品尝则是一种智慧。"
+                </div>
+                <div class="quote-author" id="quoteAuthor">
+                    —— 奥古斯特·埃斯科菲耶
+                </div>
+            </div>
+
+            <!-- 菜品故事 -->
+            <div class="story-card">
+                <div class="story-title">主厨推荐故事</div>
+                <div class="story-text" id="dishStory">
+                    今日的招牌菜"松露和牛"选用了来自日本兵库县的A5级和牛，搭配意大利阿尔巴白松露。主厨采用低温慢煮工艺，在58度的精准温控下烹制48小时，保留了肉质的鲜嫩与松露的馥郁芳香。每一口都是对食材本味的极致致敬。
+                </div>
+            </div>
+
+            <button class="cancel-order-btn" onclick="showCancelConfirm()">取消订单</button>
+            <button class="new-order-btn" onclick="resetOrder()">再来一单</button>
+        </div>
+
+        <!-- 取消订单确认弹窗 -->
+        <div id="cancelModal" class="modal modal-alert">
+            <div class="modal-content-small">
+            <div class="alert-icon">⚠️</div>
+            <h3 class="alert-title">确认取消订单？</h3>
+                <p class="alert-text">
+                    订单取消后，款项将在3-5个工作日内退回。<br>
+                    已出餐的订单无法取消。
+                </p>
+            <div class="alert-actions">
+                <button class="btn-secondary" onclick="closeCancelModal()">再想想</button>
+                <button class="btn-danger" onclick="confirmCancelOrder()">确认取消</button>
+            </div>
+            </div>
+        </div>
+
+        <div id="cancelReservationModal" class="modal modal-alert">
+            <div class="modal-content-small">
+            <div class="alert-icon">📅</div>
+            <h3 class="alert-title">确认取消预约？</h3>
+                <p class="alert-text">
+                    预约取消后，定金将在3-5个工作日内退回。<br>
+                    当日18:00前可免费取消，逾期将产生违约金。
+                </p>
+            <div class="alert-actions">
+                <button class="btn-secondary" onclick="closeCancelReservationModal()">保留预约</button>
+                <button class="btn-danger" onclick="confirmCancelReservation()">确认取消</button>
+            </div>
+            </div>
+        </div>
+
+        <!-- 订单已取消页面 -->
+        <div id="cancelledPage" class="page success-page">
+            <div class="success-icon" style="border-color: var(--text-muted); color: var(--text-muted);">✓</div>
+            
+            <div class="order-label">订单已取消</div>
+            <div class="order-number" id="cancelledOrderNumber" style="color: var(--text-muted); font-size: 36px;">A-028</div>
+
+            <div class="quote-card">
+                <div class="quote-text">
+                    "期待您的再次光临。"
+                </div>
+                <div class="quote-author">
+                    —— L'Âme Élégante
+                </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-title">退款说明</div>
+                <div class="story-text">
+                    您的退款申请已受理，款项将在3-5个工作日内原路退回至您的支付账户。如有疑问，请联系客服：400-888-9999。
+                </div>
+            </div>
+
+            <button class="new-order-btn" onclick="resetOrder()">返回首页</button>
+        </div>
+
+        <!-- Toast提示 -->
+        <div id="toast" class="toast">已加入购物车</div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

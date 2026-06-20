@@ -1,0 +1,1678 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --gold: #D4AF37;
+    --gold-light: #F4E4BC;
+    --gold-dark: #B8941F;
+    --black: #0A0A0A;
+    --charcoal: #1A1A1A;
+    --cream: #FAF8F3;
+    --white: #FFFFFF;
+    --text-muted: #888888;
+    --success: #2D5016;
+    --error: #8B0000;
+    --dark-bg: #0F0C09;
+    --light-bg: #2A2622;
+}
+
+body {
+    font-family: 'Noto Serif SC', serif;
+    background: #2a2a2a;
+    color: var(--cream);
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+.app-container {
+    max-width: 390px;    /* 模拟 iPhone 14 宽度 */
+    height: 844px;       /* 模拟 iPhone 14 高度，不再无限拉长 */
+    margin: 20px auto;
+    background: var(--dark-bg);
+    border: 12px solid #3a3a3a; /* 模拟手机边框 */
+    border-radius: 50px;    /* 模拟手机圆角 */
+    position: relative;
+    overflow: hidden;   /* 关键：内容超出手机壳要隐藏 */
+    display: flex;    
+    flex-direction: column;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9), 
+                inset 0 0 2px 1px rgba(185, 149, 32, 0.2);
+}
+
+/* 动画 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes scaleIn {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 调整状态栏，让它固定在手机顶部 */
+.status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding:0 20px;
+    height: 50px;
+    width: 100%;
+    background: var(--dark-bg);
+    z-index: 1000;
+    flex-shrink: 0;
+    background: rgba(15, 12, 9, 0.8);
+    backdrop-filter: blur(10px); /* 磨砂玻璃效果，更高级 */
+    color: var(--gold-light); /* 让状态栏所有文字和图标都带点微光金 */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; /* 换个更像手机系统的字体 */
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.status-left, .status-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.status-left {
+    justify-content: flex-start;
+}
+
+.status-right {
+    justify-content: flex-end;
+    gap: 0px;
+}
+
+.status-center {
+    flex: 1;
+    text-align: center;
+}
+
+.status-time {
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-size: 20px;
+}
+
+/* 针对状态栏右侧图标的调整 */
+.status-right svg {
+    width: 30px;  /* 稍微加大 */
+    height: 30px;
+    margin-left: 8px;
+    stroke-width: 2.5px; /* 增加线条粗细，看起来更扎实 */
+    color: var(--gold-light);
+}
+
+.restaurant-name-small {
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    font-style: italic;
+}
+
+.page {
+    display: none;
+    flex:1;
+    overflow-y: auto;
+    padding: 20px;
+    padding-bottom: 80px;
+    -webkit-overflow-scrolling: touch;
+    /*animation: fadeIn 0.6s ease-out;*/
+    /* height:100%; */
+    /* box-sizing: border-box;*/
+    
+}
+
+
+.page.active {
+    display: block;
+}
+
+/* 针对所有页面的滚动条进行定制 */
+.page::-webkit-scrollbar {
+    width: 4px; /* 极细，保持优雅 */
+}
+
+/* 滚动条轨道 */
+.page::-webkit-scrollbar-track {
+    background: rgba(15, 12, 9, 0.5); 
+}
+
+/* 滚动条滑块（那个会动的键） */
+.page::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, var(--gold-dark), var(--gold)); /* 金色渐变 */
+    border-radius: 10px;
+}
+
+/* 鼠标悬停时稍微变亮一点 */
+.page::-webkit-scrollbar-thumb:hover {
+    background: var(--gold-light);
+}
+
+/* 导航栏 */
+.nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.back-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--gold);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 18px;
+}
+
+.back-btn:hover {
+    background: var(--gold);
+    color: var(--black);
+    transform: translateX(-3px);
+}
+
+.page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-align: center;
+    flex: 1;
+}
+
+.cart-icon {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cart-icon:hover {
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: var(--gold);
+    color: var(--black);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+/* 欢迎页面 */
+.welcome-page {
+    background: linear-gradient(135deg, rgba(42, 38, 34, 0.7) 0%, rgba(15, 12, 9, 0.85) 100%), 
+                url('https://images.pexels.com/photos/1397518/pexels-photo-1397518.jpeg?auto=compress&cs=tinysrgb&w=1200&q=80');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px;
+}
+
+/* 针对欢迎页的特殊处理：它需要内容居中 */
+.page.welcome-page.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 菜单头（返回键所在的行） */
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 20px;
+    position: sticky;        /* 让返回键和购物车在滚动时吸顶（可选） */
+    top: -20px;              /* 抵消 page 的 padding */
+    background: var(--dark-bg);
+    z-index: 100;
+}
+
+.restaurant-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 400;
+    letter-spacing: 8px;
+    color: var(--gold);
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.restaurant-subtitle {
+    font-size: 14px;
+    letter-spacing: 6px;
+    color: var(--gold-light);
+    margin-bottom: 60px;
+    font-weight: 300;
+}
+
+.michelin-stars {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 60px;
+}
+
+.star {
+    width: 30px;
+    height: 30px;
+    background: var(--gold);
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    animation: float 3s ease-in-out infinite;
+}
+
+.star:nth-child(2) { animation-delay: 0.2s; }
+.star:nth-child(3) { animation-delay: 0.4s; }
+
+.welcome-text {
+    font-size: 16px;
+    line-height: 2;
+    color: var(--cream);
+    margin-bottom: 40px;
+    max-width: 300px;
+    font-weight: 300;
+}
+
+.start-btn {
+    background: transparent;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    padding: 16px 50px;
+    font-size: 14px;
+    letter-spacing: 4px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    font-family: 'Noto Serif SC', serif;
+    position: relative;
+    overflow: hidden;
+    font-weight: 600;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.start-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+    transition: left 0.5s;
+}
+
+.start-btn:hover::before {
+    left: 100%;
+}
+
+.start-btn:hover {
+    background: var(--gold);
+    color: var(--black);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+}
+
+/* 菜单页面 */
+.menu-categories {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scrollbar-width: none;
+}
+
+.menu-categories::-webkit-scrollbar {
+    display: none;
+}
+
+.category-btn {
+    padding: 10px 25px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    background: rgba(42, 38, 34, 0.5);
+    color: var(--text-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 14px;
+    letter-spacing: 2px;
+    border-radius: 4px;
+}
+
+.category-btn.active {
+    background: var(--gold);
+    color: var(--black);
+    border-color: var(--gold);
+}
+
+.category-btn:hover:not(.active) {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.menu-grid {
+    display: grid;
+    gap: 25px;
+}
+
+.dish-card {
+    background: rgba(42, 38, 34, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dish-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+}
+
+.dish-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(212, 175, 55, 0.3);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.dish-card:hover::before {
+    transform: scaleX(1);
+}
+
+.dish-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 15px;
+}
+
+.dish-name {
+    font-size: 20px;
+    color: var(--cream);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.dish-en {
+    font-family: 'Playfair Display', serif;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    letter-spacing: 1px;
+}
+
+.dish-price {
+    font-size: 24px;
+    color: var(--gold);
+    font-weight: 300;
+    font-family: 'Playfair Display', serif;
+}
+
+.dish-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: 15px;
+}
+
+.dish-tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    padding: 4px 12px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    font-size: 11px;
+    color: var(--gold-light);
+    letter-spacing: 1px;
+    background: rgba(212, 175, 55, 0.08);
+    border-radius: 3px;
+}
+
+/* 针对小弹窗的特殊遮罩：垂直居中 */
+.modal-alert {
+    align-items: center !important; /* 覆盖之前详情页的 flex-end */
+    padding: 30px;
+}
+
+/* 小弹窗的主体容器 */
+.modal-content-small {
+    width: 100%;
+    max-width: 300px;
+    background: var(--dark-bg);
+    border: 1px solid rgba(212, 175, 55, 0.3); /* 淡淡的金边 */
+    border-radius: 24px;
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+    animation: zoomIn 0.3s ease-out;
+}
+
+/* 缩放进入动画 */
+@keyframes zoomIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.alert-icon {
+    font-size: 40px;
+    margin-bottom: 15px;
+}
+
+.alert-title {
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+.alert-text {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+/* 按钮组布局 */
+.alert-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* 通用黑色/金色按钮（次要） */
+.btn-secondary {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--text-muted);
+    color: var(--white);
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* 危险操作按钮（红色） */
+.btn-danger {
+    flex: 1;
+    background: var(--error);
+    border: none;
+    color: var(--white);
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* 统一小弹窗的滑动条（虽然通常用不到，但为了防万一） */
+.modal-content-small::-webkit-scrollbar {
+    display: none;
+}
+
+/* 菜品详情模态框 */
+.modal {
+    display: none;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    right: 0;
+    bottom:0;
+    /*width: 100%;*/
+    /*height: 100%;*/
+    background: rgba(15, 12, 9, 0.95);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: flex-end;
+    /*overflow-y: auto;*/
+}
+
+.modal.active {
+    display: flex !important;
+}
+
+.modal-content {
+    width: 100%;
+    background: var(--dark-bg);
+    /* 顶部圆角，模仿 iOS 的底部抽屉效果 */
+    border-radius: 30px 30px 0 0; 
+    padding: 25px;
+    max-height: 90%; /* 留出一点顶部，看到后面的背景 */
+    overflow-y: auto;
+    position: relative;
+    border-top: 1px solid rgba(212, 175, 55, 0.3); /* 顶部加一条极细的金边 */
+    animation: slideUp 0.3s ease-out; /* 增加弹出动画 */
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+/* 备注输入框 */
+.modal-content textarea, 
+.modal-content input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 12px;
+    color: var(--white);
+    padding: 12px;
+    margin-top: 10px;
+    font-family: inherit;
+    outline: none;
+}
+
+.modal-content textarea:focus {
+    border-color: var(--gold); /* 聚焦时边框变金 */
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* 针对弹出层内容区域的滑动条定制 */
+.modal-content::-webkit-scrollbar {
+    width: 4px; /* 保持纤细 */
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: transparent; /* 轨道透明，显得更轻盈 */
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, var(--gold-dark), var(--gold));
+    border-radius: 10px;
+}
+
+.modal-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-bottom: 2px solid var(--gold);
+}
+
+.modal-body {
+    padding: 30px 25px;
+}
+
+.modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    color: var(--gold);
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.option-section {
+    margin-bottom: 30px;
+}
+
+.option-title {
+    font-size: 14px;
+    color: var(--gold);
+    letter-spacing: 3px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.option-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.option-btn {
+    padding: 12px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    background: rgba(42, 38, 34, 0.5);
+    color: var(--cream);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 13px;
+    text-align: center;
+}
+
+.option-btn.selected {
+    background: var(--gold);
+    color: var(--black);
+    border-color: var(--gold);
+}
+
+.option-btn:hover:not(.selected) {
+    border-color: var(--gold);
+}
+
+.dietary-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.dietary-btn {
+    padding: 10px 20px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: rgba(42, 38, 34, 0.5);
+    color: var(--cream);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 13px;
+}
+
+.dietary-btn.selected {
+    background: rgba(139, 0, 0, 0.2);
+    border-color: var(--error);
+    color: #ff6b6b;
+}
+
+.add-to-cart-btn {
+    width: 100%;
+    padding: 18px;
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    font-size: 16px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    margin-top: 30px;
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.add-to-cart-btn:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+}
+
+/* 购物车 */
+.cart-item {
+    background: rgba(42, 38, 34, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    padding: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cart-item-info h3 {
+    font-size: 18px;
+    color: var(--cream);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.cart-item-options {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.cart-item-price {
+    font-size: 20px;
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+}
+
+.cart-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.quantity-btn {
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--gold);
+    background: transparent;
+    color: var(--gold);
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quantity {
+    font-size: 16px;
+    color: var(--cream);
+    min-width: 30px;
+    text-align: center;
+}
+
+.remove-btn {
+    color: var(--error);
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: auto;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.remove-btn:hover {
+    opacity: 1;
+}
+
+.cart-summary {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(212, 175, 55, 0.3);
+    background: rgba(42, 38, 34, 0.5);
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.summary-row.total {
+    font-size: 24px;
+    color: var(--gold);
+    font-weight: 600;
+    border-top: 1px solid rgba(212, 175, 55, 0.3);
+    padding-top: 15px;
+    margin-top: 15px;
+    font-family: 'Playfair Display', serif;
+}
+
+.checkout-btn {
+    width: 100%;
+    padding: 20px;
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    font-size: 16px;
+    letter-spacing: 4px;
+    cursor: pointer;
+    margin-top: 30px;
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.checkout-btn:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+}
+
+.empty-cart {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+
+.empty-cart-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    opacity: 0.3;
+}
+
+/* 结算页面 */
+
+/* ========== 用餐方式/餐具选择的外层矩形 ========== */
+.section-card {
+    /* 这是用餐方式和餐具选择外面的长方形容器 */
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    padding: 8px;                    /* ← 改这个改外层矩形的内边距(高度) */
+    margin-bottom: 6px;               /* ← 改这个改矩形间距 */
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.checkout-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+/* ========== 内部两个正方形（中式/西式，堂食/外带） ========== */
+.radio-square {
+    /* 这是内部的两个正方形 */
+    width: 70%;                    
+    aspect-ratio: 1 / 0.4;              
+    padding: 8px !important;        
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.radio-square .radio-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.section-title {
+    /* "用餐方式" 和 "餐具选择" 的标题 */
+    font-size: 12px;
+    color: var(--gold);
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.option-list {
+    /* 包装两个正方形的容器 */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;                      
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(42, 38, 34, 0.5);
+    border-radius: 4px;
+    gap: 10px;
+}
+
+.radio-option:hover {
+    border-color: var(--gold);
+}
+
+.radio-option.selected {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: var(--gold);
+}
+
+.radio-circle {
+    width: 15px;
+    height: 15px;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.radio-square .radio-circle {
+    margin-right: 0;
+    margin-bottom: 5px;
+}
+
+.radio-option.selected .radio-circle::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: var(--gold);
+    border-radius: 50%;
+}
+
+.radio-content {
+    flex: 1;
+    min-width: 0;
+    word-break: break-word;
+}
+
+.radio-title {
+    font-size: 20px;
+    color: var(--cream);
+    margin-bottom: 4px;
+}
+
+.radio-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.payment-icons {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.pay-icon {
+    width: 40px;
+    height: 20px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+/* 成功页面 */
+.success-page {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, rgba(42, 38, 34, 0.6), rgba(15, 12, 9, 0.9));
+}
+
+.order-number {
+    font-size: 48px;
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    letter-spacing: 8px;
+    margin-bottom: 10px;
+}
+
+.order-label {
+    font-size: 14px;
+    color: var(--text-muted);
+    letter-spacing: 3px;
+    margin-bottom: 40px;
+}
+
+.est-time {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.08) 100%);
+    border: 2px solid var(--gold);
+    padding: 30px;
+    margin-bottom: 40px;
+    border-radius: 4px;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.1);
+}
+
+.time-display {
+    font-size: 36px;
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 10px;
+}
+
+.time-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+}
+
+/* 名言卡片 */
+.quote-card {
+    background: rgba(42, 38, 34, 0.6);
+    padding: 30px;
+    margin-bottom: 30px;
+    border-left: 4px solid var(--gold);
+    text-align: left;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.quote-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-style: italic;
+    color: var(--cream);
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.quote-author {
+    font-size: 12px;
+    color: var(--gold);
+    letter-spacing: 2px;
+}
+
+/* 菜品故事 */
+.story-card {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.12) 0%, transparent 100%);
+    padding: 25px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.story-title {
+    font-size: 16px;
+    color: var(--gold);
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+}
+
+.story-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 2;
+    text-align: justify;
+}
+
+.new-order-btn {
+    width: 100%;
+    padding: 18px;
+    background: transparent;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    font-size: 14px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-family: 'Noto Serif SC', serif;
+    transition: all 0.3s ease;
+}
+
+.new-order-btn:hover {
+    background: var(--gold);
+    color: var(--black);
+}
+
+/* 提示消息 */
+.toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--gold);
+    color: var(--black);
+    padding: 15px 30px;
+    border-radius: 4px;
+    font-size: 14px;
+    letter-spacing: 2px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 2000;
+    font-weight: 600;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* 错误提示 */
+.error-message {
+    color: #ff6b6b;
+    font-size: 12px;
+    margin-top: 10px;
+    display: none;
+    align-items: center;
+    gap: 5px;
+}
+
+.error-message.show {
+    display: flex;
+}
+
+/* 加载动画 */
+.loader {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(212, 175, 55, 0.3);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+.loader.show {
+    display: block;
+}
+
+/* 装饰元素 */
+.ornament {
+    text-align: center;
+    margin: 30px 0;
+    color: var(--gold);
+    opacity: 0.5;
+    font-size: 24px;
+    letter-spacing: 10px;
+}
+
+/* 响应式 */
+@media (max-width: 414px) {
+    .app-container {
+        max-width: 100%;
+    }
+}
+
+/* 欢迎页按钮布局 */
+.welcome-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.reservation-btn {
+    background: transparent;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    padding: 16px 50px;
+    font-size: 14px;
+    letter-spacing: 4px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    font-family: 'Noto Serif SC', serif;
+    position: relative;
+    overflow: hidden;
+    font-weight: 600;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reservation-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+    transition: left 0.5s;
+}
+
+.reservation-btn:hover::before {
+    left: 100%;
+}
+
+.reservation-btn:hover {
+    background: var(--gold);
+    color: var(--black);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+}
+
+/* 预约页面样式 */
+.reservation-form {
+    padding-bottom: 40px;
+}
+
+.date-picker {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scrollbar-width: none;
+}
+
+.date-picker::-webkit-scrollbar {
+    display: none;
+}
+
+.date-item {
+    min-width: 70px;
+    padding: 15px 10px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(42, 38, 34, 0.5);
+    border-radius: 4px;
+}
+
+.date-item:hover {
+    border-color: var(--gold);
+}
+
+.date-item.selected {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--black);
+}
+
+.date-item.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    border-color: rgba(212, 175, 55, 0.1);
+}
+
+.date-weekday {
+    font-size: 11px;
+    margin-bottom: 5px;
+    opacity: 0.7;
+}
+
+.date-day {
+    font-size: 20px;
+    font-weight: 600;
+    font-family: 'Playfair Display', serif;
+}
+
+.time-slots {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.time-slot {
+    padding: 12px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    position: relative;
+    background: rgba(42, 38, 34, 0.5);
+    border-radius: 4px;
+}
+
+.time-slot:hover:not(.full) {
+    border-color: var(--gold);
+}
+
+.time-slot.selected {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--black);
+}
+
+.time-slot.full {
+    opacity: 0.3;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    border-color: rgba(212, 175, 55, 0.1);
+}
+
+.time-slot .full-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 9px;
+    background: var(--error);
+    color: white;
+    padding: 2px 4px;
+    border-radius: 2px;
+}
+
+.full-message {
+    color: var(--error);
+    font-size: 13px;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    animation: fadeIn 0.3s ease;
+}
+
+/* 座位选择 */
+.seat-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.seat-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(42, 38, 34, 0.5);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.seat-card:hover {
+    border-color: var(--gold);
+    transform: translateX(5px);
+}
+
+.seat-card.selected {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: var(--gold);
+    border-width: 2px;
+}
+
+.seat-image {
+    font-size: 32px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(212, 175, 55, 0.12);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.seat-info {
+    flex: 1;
+}
+
+.seat-name {
+    font-size: 16px;
+    color: var(--cream);
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.seat-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.seat-price {
+    font-size: 14px;
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+}
+
+/* 人数计数器 */
+.guest-counter {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+}
+
+.counter-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--gold);
+    background: transparent;
+    color: var(--gold);
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.counter-btn:hover:not(:disabled) {
+    background: var(--gold);
+    color: var(--black);
+}
+
+.counter-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.guest-count {
+    font-size: 32px;
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    min-width: 40px;
+    text-align: center;
+}
+
+.guest-label {
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+/* 表单样式 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 12px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    background: rgba(42, 38, 34, 0.8);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    color: var(--cream);
+    padding: 12px 15px;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+}
+
+.form-group textarea {
+    resize: none;
+    height: 80px;
+}
+
+/* 预约汇总 */
+.reservation-summary {
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    padding: 20px;
+    margin: 30px 0;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 预约详情卡片 */
+.reservation-details-card {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.08) 100%);
+    border: 2px solid var(--gold);
+    padding: 25px;
+    margin-bottom: 40px;
+    text-align: left;
+    border-radius: 4px;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.1);
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.detail-row:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.detail-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+.detail-value {
+    font-size: 15px;
+    color: var(--cream);
+    font-weight: 500;
+}
+
+/* 取消订单按钮 */
+.cancel-order-btn {
+    width: 100%;
+    padding: 15px;
+    background: transparent;
+    border: 1px solid var(--error);
+    color: #ff6b6b;
+    font-size: 13px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    font-family: 'Noto Serif SC', serif;
+    transition: all 0.3s ease;
+}
+
+.cancel-order-btn:hover {
+    background: rgba(139, 0, 0, 0.2);
+}
+
+/* 响应式补充 */
+@media (max-width: 414px) {
+    .time-slots {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .date-item {
+        min-width: 60px;
+        padding: 12px 8px;
+    }
+
+    .checkout-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 步骤指示器 */
+.step-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.step {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+}
+
+.step.active {
+    background: var(--gold);
+    color: var(--black);
+    border-color: var(--gold);
+}
+
+.step-line {
+    width: 30px;
+    height: 2px;
+    background: rgba(212, 175, 55, 0.3);
+}
+
+/* 已选择信息卡片 */
+.selected-info-card {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.08) 100%);
+    border: 2px solid var(--gold);
+}
+
+.info-display {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.info-value {
+    font-size: 14px;
+    color: var(--cream);
+    font-weight: 500;
+}
