@@ -55,12 +55,21 @@ let isEntering = false;
 let toastTimer;
 let currentPlaylist = "main";
 let currentTrack = 0;
+let audioLoadError = false;
+let audioPlaybackBlocked = false;
 
 function enterStation() {
   if (isEntering) return;
   isEntering = true;
 
-  stationAudio.play().catch(() => syncMusicUI());
+  stationAudio.muted = false;
+  stationAudio.play().then(() => {
+    audioPlaybackBlocked = false;
+    syncMusicUI();
+  }).catch(() => {
+    audioPlaybackBlocked = true;
+    syncMusicUI();
+  });
   enterButton.disabled = true;
   ticket.classList.add("is-stamping");
   stamp.classList.add("is-visible");
@@ -263,12 +272,20 @@ function setPlaylist(name) {
 
 function loadCurrentTrack(autoplay = false) {
   const track = playlists[currentPlaylist][currentTrack];
-  stationAudio.src = track.src;
+  audioLoadError = false;
+  audioPlaybackBlocked = false;
+  stationAudio.src = new URL(track.src, document.baseURI).href;
   stationAudio.load();
   syncMusicUI();
 
   if (autoplay) {
-    stationAudio.play().catch(() => syncMusicUI());
+    stationAudio.play().then(() => {
+      audioPlaybackBlocked = false;
+      syncMusicUI();
+    }).catch(() => {
+      audioPlaybackBlocked = true;
+      syncMusicUI();
+    });
   }
 }
 
@@ -277,8 +294,11 @@ async function toggleMusic() {
 
   if (stationAudio.paused) {
     try {
+      stationAudio.muted = false;
       await stationAudio.play();
+      audioPlaybackBlocked = false;
     } catch {
+      audioPlaybackBlocked = true;
       syncMusicUI();
     }
   } else {
@@ -309,7 +329,13 @@ function syncMusicUI() {
   });
 
   musicStatuses.forEach((status) => {
-    status.textContent = `${track.label} · ${playing ? "PLAYING" : "READY"}`;
+    if (audioLoadError) {
+      status.textContent = `${track.label} · AUDIO LOAD ERROR`;
+    } else if (audioPlaybackBlocked) {
+      status.textContent = `${track.label} · TAP PLAY AGAIN`;
+    } else {
+      status.textContent = `${track.label} · ${playing ? "PLAYING" : "READY"}`;
+    }
   });
 }
 
@@ -529,6 +555,14 @@ musicVolumes.forEach((input) => {
 stationAudio.addEventListener("play", syncMusicUI);
 stationAudio.addEventListener("pause", syncMusicUI);
 stationAudio.addEventListener("ended", () => changeTrack(1));
+stationAudio.addEventListener("canplay", () => {
+  audioLoadError = false;
+  syncMusicUI();
+});
+stationAudio.addEventListener("error", () => {
+  audioLoadError = true;
+  syncMusicUI();
+});
 
 routeToast.querySelector("button").addEventListener("click", () => {
   routeToast.classList.remove("is-visible");

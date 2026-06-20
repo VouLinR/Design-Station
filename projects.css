@@ -24,6 +24,24 @@
   animation: subpageArrive .75s cubic-bezier(.2, .8, .2, 1) both;
 }
 
+.subpage-endcap {
+  display: none;
+}
+
+.station.is-showing-departures .subpage-endcap,
+.station.is-showing-interchange .subpage-endcap,
+.station.is-showing-project .subpage-endcap,
+.station.is-showing-small-stops .subpage-endcap,
+.station.is-showing-profile .subpage-endcap {
+  display: block;
+  position: relative;
+  z-index: 5;
+}
+
+.subpage-footer {
+  background: #101820;
+}
+
 @keyframes subpageArrive {
   from { opacity: 0; transform: translateX(7%); }
   to { opacity: 1; transform: translateX(0); }
